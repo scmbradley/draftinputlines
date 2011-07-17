@@ -1,19 +1,31 @@
 \documentclass{scrartcl}
 \usepackage{draftinputlines}
-\setupinputlines{headfootpackage=scrpage,inputlineshead=outside,inputlinesfoot=outside}
+\setupinputlines{
+  headfootpackage=fancyhdr,
+  inputlineshead=outside,
+  inputlinesfoot=outside,
+  sectionline=true,
+  dilbasicenvlines=true,
+  dilamsmathenvlines=true,
+}
+\usepackage{amsmath}
 
+\usepackage{lipsum}
 \begin{document}
-
 \section{Introduction}
 This package adds the input lines of various parts of your LaTeX
 document as marginpars.
 It can also add the first and last input lines read to the header and
 footer respectively.
 
-\input{inputfile}
+\section{Commands}
+
+environmentinputline
+
+setupinputlines
 
 \section{Options}
-
+Some more text
 
 \end{document}
 
