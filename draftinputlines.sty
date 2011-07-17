@@ -33,59 +33,117 @@
 %------------------------------
 
 \newcounter{firstline}
-\newif\ifscrpage
+\newif\ifdil@scrpage
+\newif\ifdil@fancyhdr
+\newif\ifdil@memoir
+\newif\ifdil@plain
+
+\define@choicekey{dilfamily}{headfootpackage}[\val\nr]{%
+  scrpage,fancyhdr,memoir,plain}{%
+  \ifcase\nr\relax
+  \dil@scrpagetrue\or
+  \dil@fancyhdrtrue\or
+  \dil@memoirtrue\or
+  \dil@plaintrue\or
+  \relax
+  \fi
+%--------------------------------------------------
+% Headers and footers
+%--------------------------------------------------
 
 %------------------------------
-% use KOMA's scrpage2
+% Use KOMA's scrpage2
 %------------------------------
 
-\ifscrpage
+
+
+\setkeys{dilfamily}{scrpage=true}
+\ifKV@dilfamily@scrpage
 \RequirePackage{scrpage2}
 \pagestyle{scrheadings}
+
+\def\dil@insidehead{
+  \ihead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+}
+\def\dil@outsidehead{
+  \ohead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+}
+\def\dil@centerhead{
+  \chead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+}
+\def\dil@lefthead{
+  \lohead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  \lehead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+}
+\def\dil@righthead{
+  \rohead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  \rehead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+}
+
+
+\def\dil@insidefoot{
+    \ifoot{\texttt{\the\inputlineno}}
+}
+\def\dil@outsidefoot{
+    \ofoot{\texttt{\the\inputlineno}}
+}
+\def\dil@centerfoot{
+    \cfoot{\texttt{\the\inputlineno}}
+}
+\def\dil@leftfoot{
+    \lofoot{\texttt{\the\inputlineno}}
+    \lefoot{\texttt{\the\inputlineno}}
+}
+\def\dil@rightfoot{
+    \rofoot{\texttt{\the\inputlineno}}
+    \refoot{\texttt{\the\inputlineno}}
+}
+\fi
+
+%------------------------------
+% The actual keys
+%------------------------------
 
 \define@choicekey{dilfamily}{inputlineshead}[\val\nr]{%
   inside,outside,center,left,right,off}{%
   \ifcase\nr\relax
-    \ihead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  \dil@insidehead
   \or
-    \ohead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  \dil@outsidehead
   \or
-    \chead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  \dil@centerhead
   \or
-    \lohead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
-    \lehead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  \dil@lefthead
   \or
-    \rohead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
-    \rehead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  \dil@righthead
   \or
-    \relax
+  \relax
   \fi
 }
 
 \define@choicekey{dilfamily}{inputlinesfoot}[\val\nr]{%
   inside,outside,center,left,right,off}{%
   \ifcase\nr\relax
-    \ifoot{\texttt{\the\inputlineno}}
+  \dil@insidefoot
   \or
-    \ofoot{\texttt{\the\inputlineno}}
+  \dil@outsidefoot
   \or
-    \cfoot{\texttt{\the\inputlineno}}
+  \dil@centerfoot
   \or
-    \lofoot{\texttt{\the\inputlineno}}
-    \lefoot{\texttt{\the\inputlineno}}
+  \dil@leftfoot
   \or
-    \rofoot{\texttt{\the\inputlineno}}
-    \refoot{\texttt{\the\inputlineno}}
+  \dil@rightfoot
   \or
-    \relax
+  \relax
   \fi
 }
+
+
+
 
 \newcommand\setupinputlines[1]{%
   \setkeys{dilfamily}{#1}
 }
-\fi
-
 
 
 % Package option for user coloured linenumbers?
