@@ -44,6 +44,24 @@
 \newif\ifdil@memoir
 \newif\ifdil@plain
 
+%------------------------------
+% Define some empty macros
+%------------------------------
+  \def\dil@insidehead{}
+  \def\dil@outsidehead{}
+  \def\dil@centerhead{}
+  \def\dil@lefthead{}
+  \def\dil@righthead{}
+  \def\dil@insidefoot{}
+  \def\dil@outsidefoot{}
+  \def\dil@centerfoot{}
+  \def\dil@leftfoot{}
+  \def\dil@rightfoot{}
+
+%------------------------------
+% Setup headers and footers
+%------------------------------
+
 \define@choicekey{dilfamily}{headfootpackage}[\val\nr]{%
   scrpage,fancyhdr,memoir,plain}{%
   \ifcase\nr\relax
@@ -186,8 +204,9 @@
 \newcommand\addlineno{\marginpar{\texttt{\the\inputlineno}}}
 
 \define@boolkey{dilfamily}{sectionline}[true]{}
+\define@boolkey{dilfamily}{captionline}[true]{}
 
-\apptocmd{\caption}{{\ttfamily\the\inputlineno\quad}}{}{}
+
 
 \newcommand\dil@patchenv[1]{%
   \AtBeginEnvironment{#1}{\addlineno}}
@@ -195,8 +214,12 @@
   \let\do\dil@patchenv
   \docsvlist}
 % Add environments to the list to have them print a line number.
-\dil@csvpatchenv{itemize,enumerate,description,quote}
-\let\environmentinputline\dil@csvpatchenv
+%\dil@csvpatchenv{itemize,enumerate,description,quote}
+
+
+\define@key{dilfamily}{environmentline}{\dil@csvpatchenv{#1}}
+\define@boolkey{dilfamily}{dilbasicenvlines}[true]{}
+\define@boolkey{dilfamily}{dilamsmathenvlines}[true]{}
 
 % Optional lists of environments
 % mathmode
@@ -204,10 +227,37 @@
 % amsthm
 % ntheorem's named envs?
 
+
+%------------------------------
+% Default options
+%------------------------------
+
+\setkeys{dilfamily}{
+  sectionline=true,
+  captionline=true,
+  inputlineshead=outside,
+  inputlinesfoot=outside,
+}
+
 \AtBeginDocument{%
   \setcounter{firstline}{\the\inputlineno}%
   \ifKV@dilfamily@sectionline
   \pretocmd{\@startsection}{\addlineno}{}{}
+  \fi
+  \ifKV@dilfamily@captionline
+  \apptocmd{\caption}{{\ttfamily\the\inputlineno\quad}}{}{}
+  \fi
+  \ifKV@dilfamily@dilbasicenvlines
+  \setkeys{dilfamily}{environmentline={
+      itemize,enumerate,description,quote,displaymath,equation,equation*,
+      quotation,verse,abstract
+    }
+  }
+  \fi
+  \ifKV@dilfamily@dilamsmathenvlines
+  \setkeys{dilfamily}{environmentline={
+      align,align*
+    }}
   \fi
 }
 
