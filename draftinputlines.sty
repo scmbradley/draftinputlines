@@ -14,10 +14,11 @@
   % The Current Maintainer of this work is Seamus Bradley
   % tex@seamusbradley.net
   %
-  % This work consists of the file draftinputlines.sty
-  % and README
+  % This work consists of the file draftinputlines.sty,
+  % draftinputlines-man.tex and README;
+  % and derived file draftinputlines-man.pdf
 
-\ProvidesPackage{draftinputlines}[2011/07/16 v0.4]
+\ProvidesPackage{draftinputlines}[2011/07/17 v0.41]
 
 
 %------------------------------
@@ -85,7 +86,41 @@
   }
   \or
 % Define commands for fancyhdr ...
-  \dil@fancyhdrtrue\or
+  \RequirePackage{fancyhdr}
+  \pagestyle{fancy}
+  \def\dil@insidehead{
+    \fancyhead[RE,LO]{%
+      \texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  }
+  \def\dil@outsidehead{
+    \fancyhead[RO,LE]{%
+      \texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  }
+  \def\dil@centerhead{
+    \chead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  }
+  \def\dil@lefthead{
+    \lhead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  }
+  \def\dil@righthead{
+    \rhead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  }
+  \def\dil@insidefoot{
+    \fancyfoot[RE,LO]{\texttt{\the\inputlineno}}
+  }
+  \def\dil@outsidefoot{
+    \fancyfoot[RO,LE]{\texttt{\the\inputlineno}}
+  }
+  \def\dil@centerfoot{
+    \cfoot{\texttt{\the\inputlineno}}
+  }
+  \def\dil@leftfoot{
+    \lfoot{\texttt{\the\inputlineno}}
+  }
+  \def\dil@rightfoot{
+    \rfoot{\texttt{\the\inputlineno}}
+  }
+  \or
   \dil@memoirtrue\or
   \dil@plaintrue\or
   \relax
@@ -135,9 +170,6 @@
   \fi
 }
 
-
-
-
 \newcommand\setupinputlines[1]{%
   \setkeys{dilfamily}{#1}
 }
@@ -147,24 +179,24 @@
 \RequirePackage{xcolor}
 \newcommand\useraddlineno{\marginpar{\textcolor{red}{\the\inputlineno}}}
 
-% Package option that loads showkeys?
-\RequirePackage{showkeys}
-
+% % Package option that loads showkeys?
+% \RequirePackage{showkeys}
 
 % Here comes the meat of the functionality
 \newcommand\addlineno{\marginpar{\texttt{\the\inputlineno}}}
 
-\pretocmd{\@startsection}{\addlineno}{}{}
+\define@boolkey{dilfamily}{sectionline}[true]{}
 
 \apptocmd{\caption}{{\ttfamily\the\inputlineno\quad}}{}{}
 
-\newcommand\patchenv[1]{%
+\newcommand\dil@patchenv[1]{%
   \AtBeginEnvironment{#1}{\addlineno}}
-\newcommand\csvpatchenv{%
-  \let\do\patchenv
+\newcommand\dil@csvpatchenv{%
+  \let\do\dil@patchenv
   \docsvlist}
 % Add environments to the list to have them print a line number.
-\csvpatchenv{itemize,enumerate,description,quote}
+\dil@csvpatchenv{itemize,enumerate,description,quote}
+\let\environmentinputline\dil@csvpatchenv
 
 % Optional lists of environments
 % mathmode
@@ -172,8 +204,19 @@
 % amsthm
 % ntheorem's named envs?
 
-\AtBeginDocument{\setcounter{firstline}{\the\inputlineno}}
-\AtBeginOfInputs{\marginpar{\small\raggedright Input file: \texttt{\currfilename} at line \texttt{\the\inputlineno}}}
+\AtBeginDocument{%
+  \setcounter{firstline}{\the\inputlineno}%
+  \ifKV@dilfamily@sectionline
+  \pretocmd{\@startsection}{\addlineno}{}{}
+  \fi
+}
+
+\AtBeginOfInputs{%
+  \noindent\rule{\linewidth}{1pt}
+  \marginpar{\small\raggedright Input file: \texttt{\currfilename} at line \texttt{\the\inputlineno}}
+}
 \AtBeginOfIncludes{\marginpar{\small\raggedright Include file: \texttt{\currfilename} at line \texttt{\the\inputlineno}}}
-\AtEndOfInputs{\marginpar{\small\raggedright End of \texttt{\currfilename}}}
+\AtEndOfInputs{%
+  \noindent\rule{\linewidth}{1pt}
+  \marginpar{\small\raggedright End of \texttt{\currfilename}}}
 \AtEndOfIncludes{\marginpar{\small\raggedright End of \texttt{\currfilename}}}
