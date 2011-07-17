@@ -1,13 +1,7 @@
 \documentclass{scrartcl}
 \usepackage{draftinputlines}
-\setupinputlines{scrpage=true}
-\makeatletter
-% \def\dil@insidehead{
-%   \ihead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
-% }
+\setupinputlines{headfootpackage=scrpage,inputlineshead=outside,inputlinesfoot=outside}
 
-\dil@insidehead
-\makeatother
 \begin{document}
 
 \section{Introduction}
@@ -15,6 +9,10 @@ This package adds the input lines of various parts of your LaTeX
 document as marginpars.
 It can also add the first and last input lines read to the header and
 footer respectively.
+
+\section{options}
+
+
 \end{document}
 
 %%% Local Variables: 

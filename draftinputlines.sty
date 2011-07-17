@@ -33,6 +33,11 @@
 %------------------------------
 
 \newcounter{firstline}
+
+%--------------------------------------------------
+% Headers and footers
+%--------------------------------------------------
+
 \newif\ifdil@scrpage
 \newif\ifdil@fancyhdr
 \newif\ifdil@memoir
@@ -41,64 +46,56 @@
 \define@choicekey{dilfamily}{headfootpackage}[\val\nr]{%
   scrpage,fancyhdr,memoir,plain}{%
   \ifcase\nr\relax
-  \dil@scrpagetrue\or
+% Define commands for scrpage
+  \RequirePackage{scrpage2}
+  \pagestyle{scrheadings}
+  \def\dil@insidehead{
+    \ihead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  }
+  \def\dil@outsidehead{
+    \ohead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  }
+  \def\dil@centerhead{
+    \chead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  }
+  \def\dil@lefthead{
+    \lohead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+    \lehead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  }
+  \def\dil@righthead{
+    \rohead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+    \rehead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  }
+  \def\dil@insidefoot{
+    \ifoot{\texttt{\the\inputlineno}}
+  }
+  \def\dil@outsidefoot{
+    \ofoot{\texttt{\the\inputlineno}}
+  }
+  \def\dil@centerfoot{
+    \cfoot{\texttt{\the\inputlineno}}
+  }
+  \def\dil@leftfoot{
+    \lofoot{\texttt{\the\inputlineno}}
+    \lefoot{\texttt{\the\inputlineno}}
+  }
+  \def\dil@rightfoot{
+    \rofoot{\texttt{\the\inputlineno}}
+    \refoot{\texttt{\the\inputlineno}}
+  }
+  \or
+% Define commands for fancyhdr ...
   \dil@fancyhdrtrue\or
   \dil@memoirtrue\or
   \dil@plaintrue\or
   \relax
   \fi
-%--------------------------------------------------
-% Headers and footers
-%--------------------------------------------------
-
-%------------------------------
-% Use KOMA's scrpage2
-%------------------------------
-
-
-
-\setkeys{dilfamily}{scrpage=true}
-\ifKV@dilfamily@scrpage
-\RequirePackage{scrpage2}
-\pagestyle{scrheadings}
-
-\def\dil@insidehead{
-  \ihead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
-}
-\def\dil@outsidehead{
-  \ohead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
-}
-\def\dil@centerhead{
-  \chead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
-}
-\def\dil@lefthead{
-  \lohead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
-  \lehead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
-}
-\def\dil@righthead{
-  \rohead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
-  \rehead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
 }
 
 
-\def\dil@insidefoot{
-    \ifoot{\texttt{\the\inputlineno}}
-}
-\def\dil@outsidefoot{
-    \ofoot{\texttt{\the\inputlineno}}
-}
-\def\dil@centerfoot{
-    \cfoot{\texttt{\the\inputlineno}}
-}
-\def\dil@leftfoot{
-    \lofoot{\texttt{\the\inputlineno}}
-    \lefoot{\texttt{\the\inputlineno}}
-}
-\def\dil@rightfoot{
-    \rofoot{\texttt{\the\inputlineno}}
-    \refoot{\texttt{\the\inputlineno}}
-}
-\fi
+
+
+
 
 %------------------------------
 % The actual keys
