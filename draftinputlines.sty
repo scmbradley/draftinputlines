@@ -173,5 +173,7 @@
 % ntheorem's named envs?
 
 \AtBeginDocument{\setcounter{firstline}{\the\inputlineno}}
-\AtBeginOfInputs{\marginpar{\texttt{\currfilename}}}
-\AtBeginOfIncludes{\marginpar{\texttt{\currfilename}}}
+\AtBeginOfInputs{\marginpar{\small\raggedright Input file: \texttt{\currfilename} at line \texttt{\the\inputlineno}}}
+\AtBeginOfIncludes{\marginpar{\small\raggedright Include file: \texttt{\currfilename} at line \texttt{\the\inputlineno}}}
+\AtEndOfInputs{\marginpar{\small\raggedright End of \texttt{\currfilename}}}
+\AtEndOfIncludes{\marginpar{\small\raggedright End of \texttt{\currfilename}}}
