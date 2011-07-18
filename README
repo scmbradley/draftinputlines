@@ -1,3 +1,11 @@
 draftinputlines.sty
 
 Add input line numbers to documents.
+
+This package was inspired by Martin Scharrer's question on
+tex.stackexchange.
+http://tex.stackexchange.com/q/23063/215
+
+Martin himself pointed me towards some of the useful things that make
+this package tick. It also makes use of his filehook and currfile
+packages.

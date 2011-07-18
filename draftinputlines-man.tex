@@ -5,18 +5,30 @@
   inputlineshead=outside,
   inputlinesfoot=outside,
   sectionline=true,
-  dilbasicenvlines=true,
-  dilamsmathenvlines=true,
+  captionline=false,
+%  dilbasicenvlines=true,
+ % dilamsmathenvlines=true,
 }
 \usepackage{amsmath}
+\usepackage{marginnote}
 
 \usepackage{lipsum}
 \begin{document}
+\pretocmd{\caption}{\addlineno}{}{}
 \section{Introduction}
 This package adds the input lines of various parts of your LaTeX
 document as marginpars.
 It can also add the first and last input lines read to the header and
 footer respectively.
+
+\begin{table}
+  \centering
+  \begin{tabular}{cc}
+    a & b\\
+    c&d
+  \end{tabular}
+  \caption{Bar}
+\end{table}
 
 \section{Commands}
 

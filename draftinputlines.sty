@@ -28,12 +28,13 @@
 \RequirePackage{currfile} % Loads filehook, which I also use...
 \RequirePackage{etoolbox}
 \RequirePackage{xkeyval}
-
+\RequirePackage{marginnote}
 %------------------------------
 % New things
 %------------------------------
 
 \newcounter{firstline}
+\newcommand\dilmnote[1]{\marginnote{\raggedright\small #1}}
 
 %--------------------------------------------------
 % Headers and footers
@@ -195,13 +196,13 @@
 
 % Package option for user coloured linenumbers?
 \RequirePackage{xcolor}
-\newcommand\useraddlineno{\marginpar{\textcolor{red}{\the\inputlineno}}}
+\newcommand\useraddlineno{\dilmnote{\textcolor{red}{\the\inputlineno}}}
 
 % % Package option that loads showkeys?
 % \RequirePackage{showkeys}
 
 % Here comes the meat of the functionality
-\newcommand\addlineno{\marginpar{\texttt{\the\inputlineno}}}
+\newcommand\addlineno{\dilmnote{\texttt{\the\inputlineno}}}
 
 \define@boolkey{dilfamily}{sectionline}[true]{}
 \define@boolkey{dilfamily}{captionline}[true]{}
@@ -245,12 +246,12 @@
   \pretocmd{\@startsection}{\addlineno}{}{}
   \fi
   \ifKV@dilfamily@captionline
-  \apptocmd{\caption}{{\ttfamily\the\inputlineno\quad}}{}{}
+  \pretocmd{\caption}{\addlineno}{}{}
   \fi
   \ifKV@dilfamily@dilbasicenvlines
   \setkeys{dilfamily}{environmentline={
       itemize,enumerate,description,quote,displaymath,equation,equation*,
-      quotation,verse,abstract
+      quotation,verse,abstract,flushleft,center,flushright,eqnarry,minipage
     }
   }
   \fi
@@ -263,10 +264,10 @@
 
 \AtBeginOfInputs{%
   \noindent\rule{\linewidth}{1pt}
-  \marginpar{\small\raggedright Input file: \texttt{\currfilename} at line \texttt{\the\inputlineno}}
+  \dilmnote{Input file: \texttt{\currfilename} at line \texttt{\the\inputlineno}}
 }
-\AtBeginOfIncludes{\marginpar{\small\raggedright Include file: \texttt{\currfilename} at line \texttt{\the\inputlineno}}}
+\AtBeginOfIncludes{\dilmnote{Include file: \texttt{\currfilename} at line \texttt{\the\inputlineno}}}
 \AtEndOfInputs{%
   \noindent\rule{\linewidth}{1pt}
-  \marginpar{\small\raggedright End of \texttt{\currfilename}}}
-\AtEndOfIncludes{\marginpar{\small\raggedright End of \texttt{\currfilename}}}
+  \dilmnote{End of \texttt{\currfilename}}}
+\AtEndOfIncludes{\dilmnote{End of \texttt{\currfilename}}}
