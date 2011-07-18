@@ -138,10 +138,9 @@
 
 
 \define@key{dilfamily}{environmentline}{\dil@csvpatchenv{#1}}
-\define@boolkey{dilfamily}{dilbasicenvlines}[true]{}
-\define@boolkey{dilfamily}{dilamsmathenvlines}[true]{}
-\define@boolkey{dilfamily}{dilinputfiles}[true]{}
-\define@boolkey{dilfamily}{inputfilesrule}[true]{}
+\define@boolkeys{dilfamily}{
+  dilbasicenvlines,dilamsmathenvlines,dilinputfiles,inputfilesrule,inputfloatname
+}[true]{}
 
 % Optional lists of environments
 % mathmode
@@ -253,7 +252,9 @@
 \pretocmd{\@startsection}{\addlineno}{}{}
 \fi
 \ifKV@dilfamily@captionline
-\pretocmd{\caption}{\dilmnotefloat{\the\inputlineno}}{}{}
+\pretocmd{\caption}{\dilmnotefloat{\texttt{%
+      \ifKV@dilfamily@inputfloatname\currfilename: \fi
+      \the\inputlineno}}}{}{}
 \fi
 \ifKV@dilfamily@dilbasicenvlines
 \setkeys{dilfamily}{environmentline={
