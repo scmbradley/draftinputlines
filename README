@@ -9,3 +9,9 @@ http://tex.stackexchange.com/q/23063/215
 Martin himself pointed me towards some of the useful things that make
 this package tick. It also makes use of his filehook and currfile
 packages.
+
+TO DO
+
+ - Normalise macro names.
+ - Add memoir and plain support for headers and footers
+ - Test everything

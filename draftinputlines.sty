@@ -34,16 +34,14 @@
 %------------------------------
 
 \newcounter{firstline}
-\newcommand\dilmnote[1]{\marginnote{\raggedright\small #1}}
+\newcommand\dilmnote[1]{\marginpar{\raggedright\small #1}}
+\newcommand\dilmnotefloat[1]{\marginnote{\raggedright\small #1}}
 
 %--------------------------------------------------
 % Headers and footers
 %--------------------------------------------------
 
-\newif\ifdil@scrpage
-\newif\ifdil@fancyhdr
-\newif\ifdil@memoir
-\newif\ifdil@plain
+\define@boolkeys{dilfamily}{scrpage,fancyhdr,memoir,plain}{}
 
 %------------------------------
 % Define some empty macros
@@ -63,93 +61,10 @@
 % Setup headers and footers
 %------------------------------
 
-\define@choicekey{dilfamily}{headfootpackage}[\val\nr]{%
+\define@choicekey{dilfamily}{headfootpackage}{%
   scrpage,fancyhdr,memoir,plain}{%
-  \ifcase\nr\relax
-% Define commands for scrpage
-  \RequirePackage{scrpage2}
-  \pagestyle{scrheadings}
-  \def\dil@insidehead{
-    \ihead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
-  }
-  \def\dil@outsidehead{
-    \ohead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
-  }
-  \def\dil@centerhead{
-    \chead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
-  }
-  \def\dil@lefthead{
-    \lohead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
-    \lehead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
-  }
-  \def\dil@righthead{
-    \rohead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
-    \rehead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
-  }
-  \def\dil@insidefoot{
-    \ifoot{\texttt{\the\inputlineno}}
-  }
-  \def\dil@outsidefoot{
-    \ofoot{\texttt{\the\inputlineno}}
-  }
-  \def\dil@centerfoot{
-    \cfoot{\texttt{\the\inputlineno}}
-  }
-  \def\dil@leftfoot{
-    \lofoot{\texttt{\the\inputlineno}}
-    \lefoot{\texttt{\the\inputlineno}}
-  }
-  \def\dil@rightfoot{
-    \rofoot{\texttt{\the\inputlineno}}
-    \refoot{\texttt{\the\inputlineno}}
-  }
-  \or
-% Define commands for fancyhdr ...
-  \RequirePackage{fancyhdr}
-  \pagestyle{fancy}
-  \def\dil@insidehead{
-    \fancyhead[RE,LO]{%
-      \texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
-  }
-  \def\dil@outsidehead{
-    \fancyhead[RO,LE]{%
-      \texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
-  }
-  \def\dil@centerhead{
-    \chead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
-  }
-  \def\dil@lefthead{
-    \lhead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
-  }
-  \def\dil@righthead{
-    \rhead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
-  }
-  \def\dil@insidefoot{
-    \fancyfoot[RE,LO]{\texttt{\the\inputlineno}}
-  }
-  \def\dil@outsidefoot{
-    \fancyfoot[RO,LE]{\texttt{\the\inputlineno}}
-  }
-  \def\dil@centerfoot{
-    \cfoot{\texttt{\the\inputlineno}}
-  }
-  \def\dil@leftfoot{
-    \lfoot{\texttt{\the\inputlineno}}
-  }
-  \def\dil@rightfoot{
-    \rfoot{\texttt{\the\inputlineno}}
-  }
-  \or
-  \dil@memoirtrue\or
-  \dil@plaintrue\or
-  \relax
-  \fi
+  \setkeys{dilfamily}{#1=true}
 }
-
-
-
-
-
 
 %------------------------------
 % The actual keys
@@ -157,36 +72,40 @@
 
 \define@choicekey{dilfamily}{inputlineshead}[\val\nr]{%
   inside,outside,center,left,right,off}{%
-  \ifcase\nr\relax
-  \dil@insidehead
-  \or
-  \dil@outsidehead
-  \or
-  \dil@centerhead
-  \or
-  \dil@lefthead
-  \or
-  \dil@righthead
-  \or
-  \relax
-  \fi
+  \AtEndPreamble{
+    \ifcase\nr\relax
+    \dil@insidehead
+    \or
+    \dil@outsidehead
+    \or
+    \dil@centerhead
+    \or
+    \dil@lefthead
+    \or
+    \dil@righthead
+    \or
+    \relax
+    \fi
+  }
 }
 
 \define@choicekey{dilfamily}{inputlinesfoot}[\val\nr]{%
   inside,outside,center,left,right,off}{%
-  \ifcase\nr\relax
-  \dil@insidefoot
-  \or
-  \dil@outsidefoot
-  \or
-  \dil@centerfoot
-  \or
-  \dil@leftfoot
-  \or
-  \dil@rightfoot
-  \or
-  \relax
-  \fi
+  \AtEndPreamble{
+    \ifcase\nr\relax
+    \dil@insidefoot
+    \or
+    \dil@outsidefoot
+    \or
+    \dil@centerfoot
+    \or
+    \dil@leftfoot
+    \or
+    \dil@rightfoot
+    \or
+    \relax
+    \fi
+  }
 }
 
 \newcommand\setupinputlines[1]{%
@@ -221,6 +140,8 @@
 \define@key{dilfamily}{environmentline}{\dil@csvpatchenv{#1}}
 \define@boolkey{dilfamily}{dilbasicenvlines}[true]{}
 \define@boolkey{dilfamily}{dilamsmathenvlines}[true]{}
+\define@boolkey{dilfamily}{dilinputfiles}[true]{}
+\define@boolkey{dilfamily}{inputfilesrule}[true]{}
 
 % Optional lists of environments
 % mathmode
@@ -234,40 +155,135 @@
 %------------------------------
 
 \setkeys{dilfamily}{
+  headfootpackage=scrpage,
   sectionline=true,
   captionline=true,
   inputlineshead=outside,
   inputlinesfoot=outside,
+  dilinputfiles=true,
 }
 
-\AtBeginDocument{%
-  \setcounter{firstline}{\the\inputlineno}%
-  \ifKV@dilfamily@sectionline
-  \pretocmd{\@startsection}{\addlineno}{}{}
-  \fi
-  \ifKV@dilfamily@captionline
-  \pretocmd{\caption}{\addlineno}{}{}
-  \fi
-  \ifKV@dilfamily@dilbasicenvlines
-  \setkeys{dilfamily}{environmentline={
-      itemize,enumerate,description,quote,displaymath,equation,equation*,
-      quotation,verse,abstract,flushleft,center,flushright,eqnarry,minipage
-    }
+\ProcessOptionsX<dilfamily>
+
+%------------------------------
+% Headers and footers
+%------------------------------
+% Define commands for scrpage
+\ifKV@dilfamily@scrpage
+\RequirePackage{scrpage2}
+\pagestyle{scrheadings}
+\def\dil@insidehead{
+  \ihead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+}
+\def\dil@outsidehead{
+  \ohead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+}
+\def\dil@centerhead{
+  \chead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+}
+\def\dil@lefthead{
+  \lohead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  \lehead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+}
+\def\dil@righthead{
+  \rohead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  \rehead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+}
+\def\dil@insidefoot{
+  \ifoot{\texttt{\the\inputlineno}}
+}
+\def\dil@outsidefoot{
+  \ofoot{\texttt{\the\inputlineno}}
+}
+\def\dil@centerfoot{
+  \cfoot{\texttt{\the\inputlineno}}
+}
+\def\dil@leftfoot{
+  \lofoot{\texttt{\the\inputlineno}}
+  \lefoot{\texttt{\the\inputlineno}}
+}
+\def\dil@rightfoot{
+  \rofoot{\texttt{\the\inputlineno}}
+  \refoot{\texttt{\the\inputlineno}}
+}
+\fi
+
+% Define commands for fancyhdr ...
+\ifKV@dilfamily@fancyhdr
+\RequirePackage{fancyhdr}
+\pagestyle{fancy}
+\def\dil@insidehead{
+  \fancyhead[RE,LO]{%
+    \texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+}
+\def\dil@outsidehead{
+  \fancyhead[RO,LE]{%
+    \texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+}
+\def\dil@centerhead{
+  \chead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+}
+\def\dil@lefthead{
+  \lhead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+}
+\def\dil@righthead{
+  \rhead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+}
+\def\dil@insidefoot{
+  \fancyfoot[RE,LO]{\texttt{\the\inputlineno}}
+}
+\def\dil@outsidefoot{
+  \fancyfoot[RO,LE]{\texttt{\the\inputlineno}}
+}
+\def\dil@centerfoot{
+  \cfoot{\texttt{\the\inputlineno}}
+}
+\def\dil@leftfoot{
+  \lfoot{\texttt{\the\inputlineno}}
+}
+\def\dil@rightfoot{
+  \rfoot{\texttt{\the\inputlineno}}
+}
+\fi
+
+
+%------------------------------
+% Sections, environments
+%------------------------------
+\ifKV@dilfamily@sectionline
+\pretocmd{\@startsection}{\addlineno}{}{}
+\fi
+\ifKV@dilfamily@captionline
+\pretocmd{\caption}{\dilmnotefloat{\the\inputlineno}}{}{}
+\fi
+\ifKV@dilfamily@dilbasicenvlines
+\setkeys{dilfamily}{environmentline={
+    itemize,enumerate,description,quote,displaymath,equation,equation*,
+    quotation,verse,abstract,flushleft,center,flushright,eqnarry,minipage
   }
-  \fi
-  \ifKV@dilfamily@dilamsmathenvlines
-  \setkeys{dilfamily}{environmentline={
-      align,align*
-    }}
-  \fi
 }
+\fi
+\ifKV@dilfamily@dilamsmathenvlines
+\setkeys{dilfamily}{environmentline={
+    align,align*
+  }}
+\fi
 
+\ifKV@dilfamily@dilinputfiles
 \AtBeginOfInputs{%
-  \noindent\rule{\linewidth}{1pt}
+  \ifKV@dilfamily@inputfilesrule%
+  \noindent\rule{\linewidth}{1pt}\fi
   \dilmnote{Input file: \texttt{\currfilename} at line \texttt{\the\inputlineno}}
 }
 \AtBeginOfIncludes{\dilmnote{Include file: \texttt{\currfilename} at line \texttt{\the\inputlineno}}}
 \AtEndOfInputs{%
-  \noindent\rule{\linewidth}{1pt}
+  \ifKV@dilfamily@inputfilesrule%
+  \noindent\rule{\linewidth}{1pt}\fi
   \dilmnote{End of \texttt{\currfilename}}}
 \AtEndOfIncludes{\dilmnote{End of \texttt{\currfilename}}}
+\fi
+
+
+\AtBeginDocument{%
+  \setcounter{firstline}{\the\inputlineno}%
+}
