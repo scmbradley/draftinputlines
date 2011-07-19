@@ -51,11 +51,13 @@
   \def\dil@centerhead{}
   \def\dil@lefthead{}
   \def\dil@righthead{}
+  \def\dil@offhead{}
   \def\dil@insidefoot{}
   \def\dil@outsidefoot{}
   \def\dil@centerfoot{}
   \def\dil@leftfoot{}
   \def\dil@rightfoot{}
+  \def\dil@offfoot{}
 
 %------------------------------
 % Setup headers and footers
@@ -70,49 +72,54 @@
 % The actual keys
 %------------------------------
 
-\define@choicekey{dilfamily}{inputlineshead}[\val\nr]{%
+% \define@choicekey{dilfamily}{inputlineshead}[\val\nr]{%
+%   inside,outside,center,left,right,off}{%
+%   \AtEndPreamble{
+%     \ifcase\nr\relax
+%     \dil@insidehead
+%     \or
+%     \dil@outsidehead
+%     \or
+%     \dil@centerhead
+%     \or
+%     \dil@lefthead
+%     \or
+%     \dil@righthead
+%     \or
+%     \relax
+%     \fi
+%   }
+% }
+% \define@choicekey{dilfamily}{inputlinesfoot}[\val\nr]{%
+%   inside,outside,center,left,right,off}{%
+%   \AtEndPreamble{
+%     \ifcase\nr\relax
+%     \dil@insidefoot
+%     \or
+%     \dil@outsidefoot
+%     \or
+%     \dil@centerfoot
+%     \or
+%     \dil@leftfoot
+%     \or
+%     \dil@rightfoot
+%     \or
+%     \relax
+%     \fi
+%   }
+% }
+
+\define@choicekey{dilfamily}{inputlineshead}{%
   inside,outside,center,left,right,off}{%
-  \AtEndPreamble{
-    \ifcase\nr\relax
-    \dil@insidehead
-    \or
-    \dil@outsidehead
-    \or
-    \dil@centerhead
-    \or
-    \dil@lefthead
-    \or
-    \dil@righthead
-    \or
-    \relax
-    \fi
-  }
+  \AtEndPreamble{\csname dil@#1head\endcsname}%
 }
-
-\define@choicekey{dilfamily}{inputlinesfoot}[\val\nr]{%
+\define@choicekey{dilfamily}{inputlinesfoot}{%
   inside,outside,center,left,right,off}{%
-  \AtEndPreamble{
-    \ifcase\nr\relax
-    \dil@insidefoot
-    \or
-    \dil@outsidefoot
-    \or
-    \dil@centerfoot
-    \or
-    \dil@leftfoot
-    \or
-    \dil@rightfoot
-    \or
-    \relax
-    \fi
-  }
+  \AtEndPreamble{\csname dil@#1foot\endcsname}%
 }
 
-\newcommand\setupinputlines[1]{%
-  \setkeys{dilfamily}{#1}
-}
-
-
+\def\dilfont{\ttfamily}
+\define@cmdkey{dilfamily}{dilfont}{\def\dilfont{\cmdKV@dilfamily@dilfont}}
 % Package option for user coloured linenumbers?
 \RequirePackage{xcolor}
 \newcommand\useraddlineno{\dilmnote{\textcolor{red}{\the\inputlineno}}}
@@ -121,7 +128,7 @@
 % \RequirePackage{showkeys}
 
 % Here comes the meat of the functionality
-\newcommand\addlineno{\dilmnote{\texttt{\the\inputlineno}}}
+\newcommand\addlineno{\dilmnote{\dilfont{\the\inputlineno}}}
 
 \define@boolkey{dilfamily}{sectionline}[true]{}
 \define@boolkey{dilfamily}{captionline}[true]{}
@@ -156,8 +163,8 @@
 \setkeys{dilfamily}{
   sectionline=true,
   captionline=true,
-  inputlineshead=outside,
-  inputlinesfoot=outside,
+  % inputlineshead=outside,
+  % inputlinesfoot=outside,
   dilinputfiles=true,
 }
 
@@ -253,7 +260,7 @@
 \fi
 \ifKV@dilfamily@captionline
 \pretocmd{\caption}{\dilmnotefloat{\texttt{%
-      \ifKV@dilfamily@inputfloatname\currfilename: \fi
+      \ifKV@dilfamily@inputfloatname\currfilename: \fi%
       \the\inputlineno}}}{}{}
 \fi
 \ifKV@dilfamily@dilbasicenvlines
