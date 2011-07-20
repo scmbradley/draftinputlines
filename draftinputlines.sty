@@ -72,6 +72,8 @@
 % The actual keys
 %------------------------------
 
+% Here is a terribly messy looking way of doing what I want:
+
 % \define@choicekey{dilfamily}{inputlineshead}[\val\nr]{%
 %   inside,outside,center,left,right,off}{%
 %   \AtEndPreamble{
@@ -109,6 +111,8 @@
 %   }
 % }
 
+% Here's a much neater way of doing it:
+
 \define@choicekey{dilfamily}{inputlineshead}{%
   inside,outside,center,left,right,off}{%
   \AtEndPreamble{\csname dil@#1head\endcsname}%
@@ -118,22 +122,21 @@
   \AtEndPreamble{\csname dil@#1foot\endcsname}%
 }
 
+%--------------------------------------------------
+% Other input line numbers
+%--------------------------------------------------
 \def\dilfont{\ttfamily}
 \define@cmdkey{dilfamily}{dilfont}{\def\dilfont{\cmdKV@dilfamily@dilfont}}
-% Package option for user coloured linenumbers?
-\RequirePackage{xcolor}
-\newcommand\useraddlineno{\dilmnote{\textcolor{red}{\the\inputlineno}}}
-
-% % Package option that loads showkeys?
-% \RequirePackage{showkeys}
 
 % Here comes the meat of the functionality
-\newcommand\addlineno{\dilmnote{\dilfont{\the\inputlineno}}}
+\newcommand\addlineno{\dilmnote{{\dilfont\the\inputlineno}}}
 
-\define@boolkey{dilfamily}{sectionline}[true]{}
-\define@boolkey{dilfamily}{captionline}[true]{}
+% % Package option for user coloured linenumbers?
+% \RequirePackage{xcolor}
+% \newcommand\useraddlineno{\dilmnote{\textcolor{red}{\the\inputlineno}}}
 
 
+\define@boolkeys{dilfamily}{sectionline,captionline}[true]{}
 
 \newcommand\dil@patchenv[1]{%
   \AtBeginEnvironment{#1}{\addlineno}}
@@ -163,10 +166,14 @@
 \setkeys{dilfamily}{
   sectionline=true,
   captionline=true,
-  % inputlineshead=outside,
-  % inputlinesfoot=outside,
+  inputlineshead=outside,
+  inputlinesfoot=outside,
   dilinputfiles=true,
 }
+
+%--------------------------------------------------
+% Here comes the options
+%--------------------------------------------------
 
 \ProcessOptionsX<dilfamily>
 
@@ -258,11 +265,13 @@
 \ifKV@dilfamily@sectionline
 \pretocmd{\@startsection}{\addlineno}{}{}
 \fi
+
 \ifKV@dilfamily@captionline
 \pretocmd{\caption}{\dilmnotefloat{\texttt{%
       \ifKV@dilfamily@inputfloatname\currfilename: \fi%
       \the\inputlineno}}}{}{}
 \fi
+
 \ifKV@dilfamily@dilbasicenvlines
 \setkeys{dilfamily}{environmentline={
     itemize,enumerate,description,quote,displaymath,equation,equation*,
@@ -270,6 +279,7 @@
   }
 }
 \fi
+
 \ifKV@dilfamily@dilamsmathenvlines
 \setkeys{dilfamily}{environmentline={
     align,align*
@@ -289,7 +299,6 @@
   \dilmnote{End of \texttt{\currfilename}}}
 \AtEndOfIncludes{\dilmnote{End of \texttt{\currfilename}}}
 \fi
-
 
 \AtBeginDocument{%
   \setcounter{firstline}{\the\inputlineno}%
