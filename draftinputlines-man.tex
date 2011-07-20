@@ -6,11 +6,29 @@ inputlinesfoot=outside,
 sectionline=true,
 captionline=true,
 dilbasicenvlines=true,
-inputfilesrule=true
+inputfilesrule=true,
+inputfloatname=true,
 ]{draftinputlines}
+\usepackage{listings}
+\lstloadlanguages{[LaTeX]TeX} 
+\lstset{% 
+    basicstyle=\ttfamily, 
+    commentstyle=\itshape\ttfamily\small, 
+    showspaces=false, 
+    showstringspaces=false, 
+    breaklines=true, 
+    breakautoindent=true, 
+    captionpos=t,
+    frame=single,
+    escapeinside={(*}{*)},
+} 
+\lstMakeShortInline{|}
+\usepackage{enumitem}
+\setdescription{font=\ttfamily,leftmargin=4em}
+% \xdef\thefilename{\currfilename}
+% \chead{\texttt{\thefilename}\xdef\thefilename{\currfilename}}
+% \cfoot{\texttt{\currfilename}}
 
-
-\usepackage{lipsum}
 
 \begin{document}
 
@@ -30,16 +48,75 @@ will overlap other numbers in some circumstances.
 This should be rare since floats should have their own space.
 
 \section{Examples}
-
 \input{inputfile}
 
-\section{Commands}
-
-environmentinputline
-
-setupinputlines
-
 \section{Options}
+Here are the options that are currently defined and a description of
+what they do.
+
+\paragraph{\lstinline+headfootpackage+}
+This sets what package is used to do the headers and footers.
+Set it to whatever is setting the headers and footers in your
+document.
+The options are:
+\begin{description}[labelindent=1cm]
+\item[scrpage] Uses KOMA script's |scrpage2|
+\item[fancyhdr] Uses |fancyhdr|
+\item[memoir] Uses |memoir|. Awkwardly, given the way |memoir|'s
+  header and footer mechanisms work, this will overwrite any current
+  headers you have set.
+  So this just sets a page number somewhere where it isn't setting an
+  input line number.
+  If you want to add the input line number to your existing headers
+  instead, you can do that with these two macros: 
+  \textsc{These macros don't exist yet. 
+    When I make memoir work, I will fix this.}
+  \item[plain] Use the plain TeX macros.
+\end{description}
+
+\paragraph{\lstinline+dilfont+}
+
+This defines what font the input line numbers will appear in.
+The default is |\ttfamily|.
+
+\paragraph{\lstinline+environmentline+}
+
+This option takes a list of environment names.
+Those environments listed will then print the line number where they
+start.
+
+\paragraph{Switches}
+
+The following is a list of Boolean (true/false) options and what they
+control.
+\begin{description}
+\item[sectionline] Determines whether each section will print the line
+  it is printed on.
+\item[captionline] Determines whether captions to figures, tables and
+  so on, will print their input line number.
+  I expect this will break with subcaptions.
+  These marginpars don't float.
+\item[inputfloatname] Prints the name of the file the float is from.
+  If |captionline| is false, this has no effect.
+\item[dilbasicenvlines] This basically passes a bunch of basic
+  environments to |environmentline|, namely:
+  |itemize,enumerate,description,quote,displaymath,equation,equation*,quotation,verse,abstract,flushleft,center,flushright,eqnarry,minipage|
+\item[dilamsmathenvlines] Like |dilbasicenvlines| this makes some
+  |amsmath| environments print their input line numbers.
+  For now it only actually does this for |align| and |align*|.
+  Most of the other environments are supposed to be use \emph{inside}
+  another mathmode environment, and so the outer mathmode
+  environment's start should give enough of an indication of where
+  this environment is.
+\item[dilinputfiles] Prints the name and input line number of files
+  included with |\input| and |\include|.
+\item[dilinputfilesrule] Prints rules above the start and below the
+  end of an included file, so it's obvious where in the page it starts
+  and ends.
+  If |dilinputfiles| is false, this doesn't do anything.
+\end{description}
+
+
 
 
 \end{document}
