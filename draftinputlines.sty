@@ -18,7 +18,7 @@
   % draftinputlines-man.tex and README;
   % and derived file draftinputlines-man.pdf
 
-\ProvidesPackage{draftinputlines}[2011/07/17 v0.41]
+\ProvidesPackage{draftinputlines}[2011/08/11 v0.45]
 
 
 %------------------------------
@@ -29,14 +29,17 @@
 \RequirePackage{etoolbox}
 \RequirePackage{xkeyval}
 \RequirePackage{marginnote}
+\RequirePackage[excludeor]{everyhook}
 %------------------------------
 % New things
 %------------------------------
 
 \newcounter{firstline}
-\newcommand\dilmnote[1]{\marginpar{\raggedright\small #1}}
-\newcommand\dilmnotefloat[1]{\marginnote{\raggedright\small #1}}
 
+\newcommand\dilmnotefloat[1]{\notmarginhookfalse\marginnote{\raggedright\small #1}\notmarginhooktrue}
+\let\dilmnote\dilmnotefloat
+% I had two commands, but I decided I don't need the lines to float,
+% and marginnote works inside floats...
 %--------------------------------------------------
 % Headers and footers
 %--------------------------------------------------
@@ -122,6 +125,30 @@
   \AtEndPreamble{\csname dil@#1foot\endcsname}%
 }
 
+\define@choicekey{dilfamily}{filenamehead}{%
+  inside,outside,center,left,right,off}{%
+  \AtEndPreamble{\csname dil@#1namehead\endcsname}%
+}
+\define@choicekey{dilfamily}{filenamefoot}{%
+  inside,outside,center,left,right,off}{%
+  \AtEndPreamble{\csname dil@#1namefoot\endcsname}%
+}
+
+%--------------------------------------------------
+% Paragraph line numbers
+%--------------------------------------------------
+
+\newif\ifnotmarginhook
+\notmarginhooktrue
+\PushPostHook{par}{%
+  \ifnotmarginhook%
+  \notmarginhookfalse%
+  {\marginnote{\small\ttfamily\the\inputlineno}}%
+  \notmarginhooktrue%
+  \fi%
+}
+%\newcommand\dil@nolineno[1]{\notmarginhookfalse #1\notmarginhooktrue}
+
 %--------------------------------------------------
 % Other input line numbers
 %--------------------------------------------------
@@ -131,27 +158,25 @@
 % Here comes the meat of the functionality
 \newcommand\addlineno{\dilmnote{{\dilfont\the\inputlineno}}}
 
-% % Package option for user coloured linenumbers?
-% \RequirePackage{xcolor}
-% \newcommand\useraddlineno{\dilmnote{\textcolor{red}{\the\inputlineno}}}
+
+%%For posterity, here is the old way to have environments/sections and so on
+%%dealt with individually
+% \define@boolkeys{dilfamily}{sectionline,captionline}[true]{}
+
+% \newcommand\dil@patchenv[1]{%
+%   \AtBeginEnvironment{#1}{\addlineno}}
+% \newcommand\dil@csvpatchenv{%
+%   \let\do\dil@patchenv
+%   \docsvlist}
+% % Add environments to the list to have them print a line number.
+% %\dil@csvpatchenv{itemize,enumerate,description,quote}
 
 
-\define@boolkeys{dilfamily}{sectionline,captionline}[true]{}
-
-\newcommand\dil@patchenv[1]{%
-  \AtBeginEnvironment{#1}{\addlineno}}
-\newcommand\dil@csvpatchenv{%
-  \let\do\dil@patchenv
-  \docsvlist}
-% Add environments to the list to have them print a line number.
-%\dil@csvpatchenv{itemize,enumerate,description,quote}
-
-
-\define@key{dilfamily}{environmentline}{\dil@csvpatchenv{#1}}
+% \define@key{dilfamily}{environmentline}{\dil@csvpatchenv{#1}}
 \define@boolkeys{dilfamily}{
-  dilbasicenvlines,dilamsmathenvlines,dilinputfiles,inputfilesrule,inputfloatname
+  dilinputfiles,inputfilesrule,inputfloatname
 }[true]{}
-
+%   
 % Optional lists of environments
 % mathmode
 % amsmath
@@ -163,13 +188,6 @@
 % Default options
 %------------------------------
 
-\setkeys{dilfamily}{
-  sectionline=true,
-  captionline=true,
-  inputlineshead=outside,
-  inputlinesfoot=outside,
-  dilinputfiles=true,
-}
 
 %--------------------------------------------------
 % Here comes the options
@@ -180,81 +198,85 @@
 %------------------------------
 % Headers and footers
 %------------------------------
+%------------------------------
 % Define commands for scrpage
+%------------------------------
 \ifKV@dilfamily@scrpage
 \RequirePackage{scrpage2}
 \pagestyle{scrheadings}
 \def\dil@insidehead{
-  \ihead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  \ihead{{\dilfont\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
 }
 \def\dil@outsidehead{
-  \ohead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+\ohead{{\dilfont\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
 }
 \def\dil@centerhead{
-  \chead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  \chead{{\dilfont\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
 }
 \def\dil@lefthead{
-  \lohead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
-  \lehead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  \lohead{{\dilfont\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  \lehead{{\dilfont\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
 }
 \def\dil@righthead{
-  \rohead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
-  \rehead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  \rohead{{\dilfont\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  \rehead{{\dilfont\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
 }
 \def\dil@insidefoot{
-  \ifoot{\texttt{\the\inputlineno}}
+  \ifoot{{\dilfont\the\inputlineno}}
 }
 \def\dil@outsidefoot{
-  \ofoot{\texttt{\the\inputlineno}}
+  \ofoot{{\dilfont\the\inputlineno}}
 }
 \def\dil@centerfoot{
-  \cfoot{\texttt{\the\inputlineno}}
+  \cfoot{{\dilfont\the\inputlineno}}
 }
 \def\dil@leftfoot{
-  \lofoot{\texttt{\the\inputlineno}}
-  \lefoot{\texttt{\the\inputlineno}}
+  \lofoot{{\dilfont\the\inputlineno}}
+  \lefoot{{\dilfont\the\inputlineno}}
 }
 \def\dil@rightfoot{
-  \rofoot{\texttt{\the\inputlineno}}
-  \refoot{\texttt{\the\inputlineno}}
+  \rofoot{{\dilfont\the\inputlineno}}
+  \refoot{{\dilfont\the\inputlineno}}
 }
 \fi
 
-% Define commands for fancyhdr ...
+%------------------------------
+% Define commands for fancyhdr 
+%------------------------------
 \ifKV@dilfamily@fancyhdr
 \RequirePackage{fancyhdr}
 \pagestyle{fancy}
 \def\dil@insidehead{
   \fancyhead[RE,LO]{%
-    \texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+    {\dilfont\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
 }
 \def\dil@outsidehead{
   \fancyhead[RO,LE]{%
-    \texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+    {\dilfont\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
 }
 \def\dil@centerhead{
-  \chead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  \chead{{\dilfont\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
 }
 \def\dil@lefthead{
-  \lhead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  \lhead{{\dilfont\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
 }
 \def\dil@righthead{
-  \rhead{\texttt{\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  \rhead{{\dilfont\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
 }
 \def\dil@insidefoot{
-  \fancyfoot[RE,LO]{\texttt{\the\inputlineno}}
+  \fancyfoot[RE,LO]{{\dilfont\the\inputlineno}}
 }
 \def\dil@outsidefoot{
-  \fancyfoot[RO,LE]{\texttt{\the\inputlineno}}
+  \fancyfoot[RO,LE]{{\dilfont\the\inputlineno}}
 }
 \def\dil@centerfoot{
-  \cfoot{\texttt{\the\inputlineno}}
+  \cfoot{{\dilfont\the\inputlineno}}
 }
 \def\dil@leftfoot{
-  \lfoot{\texttt{\the\inputlineno}}
+  \lfoot{{\dilfont\the\inputlineno}}
 }
 \def\dil@rightfoot{
-  \rfoot{\texttt{\the\inputlineno}}
+  \rfoot{{\dilfont\the\inputlineno}}
 }
 \fi
 
@@ -262,42 +284,27 @@
 %------------------------------
 % Sections, environments
 %------------------------------
-\ifKV@dilfamily@sectionline
-\pretocmd{\@startsection}{\addlineno}{}{}
-\fi
-
-\ifKV@dilfamily@captionline
-\pretocmd{\caption}{\dilmnotefloat{\texttt{%
-      \ifKV@dilfamily@inputfloatname\currfilename: \fi%
-      \the\inputlineno}}}{}{}
-\fi
-
-\ifKV@dilfamily@dilbasicenvlines
-\setkeys{dilfamily}{environmentline={
-    itemize,enumerate,description,quote,displaymath,equation,equation*,
-    quotation,verse,abstract,flushleft,center,flushright,eqnarry,minipage
-  }
-}
-\fi
-
-\ifKV@dilfamily@dilamsmathenvlines
-\setkeys{dilfamily}{environmentline={
-    align,align*
-  }}
-\fi
 
 \ifKV@dilfamily@dilinputfiles
 \AtBeginOfInputs{%
   \ifKV@dilfamily@inputfilesrule%
-  \noindent\rule{\linewidth}{1pt}\fi
-  \dilmnote{Input file: \texttt{\currfilename} at line \texttt{\the\inputlineno}}
+  \noindent\rule{\linewidth}{1pt}%
+  \fi
+  \@reversemargintrue
+  \dilmnote{\dilfont\currfilename}
+  \@reversemarginfalse
 }
-\AtBeginOfIncludes{\dilmnote{Include file: \texttt{\currfilename} at line \texttt{\the\inputlineno}}}
+
 \AtEndOfInputs{%
   \ifKV@dilfamily@inputfilesrule%
-  \noindent\rule{\linewidth}{1pt}\fi
-  \dilmnote{End of \texttt{\currfilename}}}
-\AtEndOfIncludes{\dilmnote{End of \texttt{\currfilename}}}
+  \noindent\rule{\linewidth}{1pt}%
+  \fi%
+  \@reversemargintrue%
+  \dilmnote{\dilfont End \currfilename}%
+  \@reversemarginfalse%
+}
+\AtBeginOfIncludes{\dilmnote{Include file: {\dilfont\currfilename} at line {\dilfont\the\inputlineno}}}
+\AtEndOfIncludes{\dilmnote{End of {\dilfont\currfilename}}}
 \fi
 
 \AtBeginDocument{%
