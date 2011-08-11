@@ -74,47 +74,7 @@
 %------------------------------
 % The actual keys
 %------------------------------
-
-% Here is a terribly messy looking way of doing what I want:
-
-% \define@choicekey{dilfamily}{inputlineshead}[\val\nr]{%
-%   inside,outside,center,left,right,off}{%
-%   \AtEndPreamble{
-%     \ifcase\nr\relax
-%     \dil@insidehead
-%     \or
-%     \dil@outsidehead
-%     \or
-%     \dil@centerhead
-%     \or
-%     \dil@lefthead
-%     \or
-%     \dil@righthead
-%     \or
-%     \relax
-%     \fi
-%   }
-% }
-% \define@choicekey{dilfamily}{inputlinesfoot}[\val\nr]{%
-%   inside,outside,center,left,right,off}{%
-%   \AtEndPreamble{
-%     \ifcase\nr\relax
-%     \dil@insidefoot
-%     \or
-%     \dil@outsidefoot
-%     \or
-%     \dil@centerfoot
-%     \or
-%     \dil@leftfoot
-%     \or
-%     \dil@rightfoot
-%     \or
-%     \relax
-%     \fi
-%   }
-% }
-
-% Here's a much neater way of doing it:
+% I'm beginning to wonder whether supporting this much control is really worth it...
 
 \define@choicekey{dilfamily}{inputlineshead}{%
   inside,outside,center,left,right,off}{%
@@ -137,17 +97,18 @@
 %--------------------------------------------------
 % Paragraph line numbers
 %--------------------------------------------------
+% I guess this is dangerous because the paragraph hook gets used all over the place
 
 \newif\ifnotmarginhook
 \notmarginhooktrue
 \PushPostHook{par}{%
   \ifnotmarginhook%
   \notmarginhookfalse%
-  {\marginnote{\small\ttfamily\the\inputlineno}}%
+  {\marginnote{\small\dilfont\the\inputlineno}}%
   \notmarginhooktrue%
   \fi%
 }
-%\newcommand\dil@nolineno[1]{\notmarginhookfalse #1\notmarginhooktrue}
+
 
 %--------------------------------------------------
 % Other input line numbers
@@ -155,12 +116,10 @@
 \def\dilfont{\ttfamily}
 \define@cmdkey{dilfamily}{dilfont}{\def\dilfont{\cmdKV@dilfamily@dilfont}}
 
-% Here comes the meat of the functionality
-\newcommand\addlineno{\dilmnote{{\dilfont\the\inputlineno}}}
-
 
 %%For posterity, here is the old way to have environments/sections and so on
 %%dealt with individually
+%% If I decide that the paragraph hack is too dangerous, I'll turn these back on.
 % \define@boolkeys{dilfamily}{sectionline,captionline}[true]{}
 
 % \newcommand\dil@patchenv[1]{%
@@ -173,6 +132,7 @@
 
 
 % \define@key{dilfamily}{environmentline}{\dil@csvpatchenv{#1}}
+
 \define@boolkeys{dilfamily}{
   dilinputfiles,inputfilesrule,inputfloatname
 }[true]{}
@@ -187,7 +147,7 @@
 %------------------------------
 % Default options
 %------------------------------
-
+%I turned these off because weird stuff happened if you over-rode them.
 
 %--------------------------------------------------
 % Here comes the options
@@ -284,6 +244,9 @@
 %------------------------------
 % Sections, environments
 %------------------------------
+
+% Oops. I deleted the environment stuff...
+
 
 \ifKV@dilfamily@dilinputfiles
 \AtBeginOfInputs{%
