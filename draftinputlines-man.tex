@@ -3,9 +3,7 @@
 headfootpackage=scrpage,
 inputlineshead=outside,
 inputlinesfoot=outside,
-sectionline=true,
-captionline=true,
-dilbasicenvlines=true,
+dilinputfiles=true,
 inputfilesrule=true,
 inputfloatname=true,
 ]{draftinputlines}
@@ -28,10 +26,7 @@ inputfloatname=true,
 % \xdef\thefilename{\currfilename}
 % \chead{\texttt{\thefilename}\xdef\thefilename{\currfilename}}
 % \cfoot{\texttt{\currfilename}}
-
-
 \begin{document}
-
 \section{Introduction}
 This package adds the input lines of various parts of your LaTeX
 document as marginpars.
@@ -39,7 +34,7 @@ It can also add the first and last input lines read to the header and
 footer respectively.
 
 The marginpars float, and I can't guarantee they'll be entirely
-accurate if lots are bunched together.
+accurate if lots are bunched together.\marginnote{Rightie}
 Also, the begin and end page numbers might not be totally accurate.
 But they're still useful (I hope).
 
@@ -73,6 +68,26 @@ The options are:
     When I make memoir work, I will fix this.}
   \item[plain] Use the plain TeX macros.
 \end{description}
+
+\paragraph{\lstinline+inputlineshead,inputlinesfoot+}
+
+The print the line number at the start of the page at the top and the
+end of the page at the bottom.
+The options available are the same for both, though they can be set separately. 
+They are:
+\begin{description}[labelindent=1cm]
+\item[inside] Print number on the inside (same as |left| for onesided
+  documents)
+\item[outside] Print number on the outside (same as |right| for
+  onesided documents)
+\item[center] Print number on in the center
+\item[left] Print number on the left
+\item[right] Print number on the right
+\item[off] Don't print the numbers
+\end{description}
+
+They aren't necessarily 100\% accurate given the asynchronous way that
+the page builder works, but they are probably good enough for most purposes.
 
 \paragraph{\lstinline+dilfont+}
 
