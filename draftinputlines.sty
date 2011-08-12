@@ -210,7 +210,7 @@
   \dilfont\thefilename\xdef\thefilename{\currfilename}%
 }
 \newcommand\bottomlinefile{%
-  \dilfont\currfilename%
+  \dilfont\thefilename%
 }
 \newcommand\set@head[2]{%
   \expandafter\def\csname dil@#1head\endcsname{%
@@ -218,12 +218,19 @@
 \newcommand\set@foot[2]{
   \expandafter\def\csname dil@#1foot\endcsname{%
     \csname #2\endcsname{\bottomlineno}}}
+
 \newcommand\set@namehead[2]{%
   \expandafter\def\csname dil@#1namehead\endcsname{%
     \csname #2\endcsname{\toplinefile}}}
 \newcommand\set@namefoot[2]{%
   \expandafter\def\csname dil@#1namefoot\endcsname{%
     \csname #2\endcsname{\bottomlinefile}}}
+
+%------------------------------
+% Define commands for scrpage
+%------------------------------
+
+%This section is tremendously inelegant.
 
 \newcommand\scrlefthead[1]{%
   \lohead{#1}\lehead{#1}%
@@ -237,11 +244,7 @@
 \newcommand\scrrightfoot[1]{%
   \rofoot{#1}\refoot{#1}%
 }
-%------------------------------
-% Define commands for scrpage
-%------------------------------
 
-%This section is tremendously inelegant.
 
 \ifKV@dilfamily@scrpage
 \RequirePackage{scrpage2}
@@ -280,38 +283,46 @@
 \ifKV@dilfamily@fancyhdr
 \RequirePackage{fancyhdr}
 \pagestyle{fancy}
-\def\dil@insidehead{
-  \fancyhead[RE,LO]{%
-    \toplineno}
+
+\newcommand\fcinsidehead[1]{%
+  \fancyhead[RE,LO]{#1}%
 }
-\def\dil@outsidehead{
-  \fancyhead[RO,LE]{%
-    \toplineno}
+\newcommand\fcoutsidehead[1]{%
+  \fancyhead[RO,LE]{#1}%
 }
-\def\dil@centerhead{
-  \chead{\toplineno}
+\newcommand\fcinsidefoot[1]{%
+  \fancyfoot[RE,LO]{#1}
 }
-\def\dil@lefthead{
-  \lhead{\toplineno}
+\newcommand\fcoutsidefoot[1]{%
+  \fancyfoot[RO,LE]{#1}
 }
-\def\dil@righthead{
-  \rhead{\toplineno}
-}
-\def\dil@insidefoot{
-  \fancyfoot[RE,LO]{\bottomlineno}
-}
-\def\dil@outsidefoot{
-  \fancyfoot[RO,LE]{\bottomlineno}
-}
-\def\dil@centerfoot{
-  \cfoot{\bottomlineno}
-}
-\def\dil@leftfoot{
-  \lfoot{\bottomlineno}
-}
-\def\dil@rightfoot{
-  \rfoot{\bottomlineno}
-}
+
+\set@head{inside}{fcinsidehead}
+\set@head{outside}{fcoutsidehead}
+\set@head{center}{chead}
+\set@head{left}{lhead}
+\set@head{right}{rhead}
+\set@foot{inside}{fcinsidefoot}
+\set@foot{outside}{fcoutsidefoot}
+\set@foot{center}{cfoot}
+\set@foot{left}{lfoot}
+\set@foot{right}{rfoot}
+
+\set@namehead{inside}{fcinsidehead}
+\set@namehead{outside}{fcoutsidehead}
+\set@namehead{center}{chead}
+\set@namehead{left}{lhead}
+\set@namehead{right}{rhead}
+\set@namefoot{inside}{fcinsidefoot}
+\set@namefoot{outside}{fcoutsidefoot}
+\set@namefoot{center}{cfoot}
+\set@namefoot{left}{lfoot}
+\set@namefoot{right}{rfoot}
+
+\ifKV@dilfamily@hijackboth
+\cfoot{\thepage}
+\fi
+
 \fi
 
 
