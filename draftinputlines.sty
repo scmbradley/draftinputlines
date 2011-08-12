@@ -49,6 +49,7 @@
 \define@boolkey{dilfamily}{safemode}[false]{}
 
 \define@boolkey{dilfamily}{hijackheaders}[true]{}
+\define@boolkeys{dilfamily}{hijackfooters,hijackboth}[false]{}
 
 %--------------------------------------------------
 % Headers and footers
@@ -180,11 +181,23 @@
 %------------------------------
 % Headers and footers
 %------------------------------
+\ifKV@dilfamily@hijackboth
+\setkeys{dilfamily}{
+  hijackheaders=true,
+  hijackfooters=true
+}
+\fi
 \ifKV@dilfamily@hijackheaders
 \setkeys{dilfamily}{
   inputlineshead=outside,
+  filenamehead=inside
+}
+\fi
+\ifKV@dilfamily@hijackfooters
+\setkeys{dilfamily}{
   inputlinesfoot=outside,
-  }
+  filenamefoot=inside
+}
 \fi
 
 \newcommand\toplineno{%
@@ -200,12 +213,30 @@
   \dilfont\currfilename%
 }
 \newcommand\set@head[2]{%
-  \expandafter\def\csname #1\endcsname{%
-    \csname dil@#2\endcsname{\toplineno}}}
+  \expandafter\def\csname dil@#1head\endcsname{%
+    \csname #2\endcsname{\toplineno}}}
 \newcommand\set@foot[2]{
-  \expandafter\def\csname #1\endcsname{%
-    \csname dil@#2\endcsname{\bottomlineno}}}
+  \expandafter\def\csname dil@#1foot\endcsname{%
+    \csname #2\endcsname{\bottomlineno}}}
+\newcommand\set@namehead[2]{%
+  \expandafter\def\csname dil@#1namehead\endcsname{%
+    \csname #2\endcsname{\toplinefile}}}
+\newcommand\set@namefoot[2]{%
+  \expandafter\def\csname dil@#1namefoot\endcsname{%
+    \csname #2\endcsname{\bottomlinefile}}}
 
+\newcommand\scrlefthead[1]{%
+  \lohead{#1}\lehead{#1}%
+}
+\newcommand\scrrighthead[1]{%
+  \rohead{#1}\rehead{#1}%
+}
+\newcommand\scrleftfoot[1]{%
+  \lofoot{#1}\lefoot{#1}%
+}
+\newcommand\scrrightfoot[1]{%
+  \rofoot{#1}\refoot{#1}%
+}
 %------------------------------
 % Define commands for scrpage
 %------------------------------
@@ -215,41 +246,32 @@
 \ifKV@dilfamily@scrpage
 \RequirePackage{scrpage2}
 \pagestyle{scrheadings}
-\def\dil@insidehead{
-  \ihead{\toplineno}
-}
 
-\def\dil@outsidehead{
-  \ohead{\toplineno}
-}
-\def\dil@centerhead{
-  \chead{\toplineno}
-}
-\def\dil@lefthead{
-  \lohead{\toplineno}
-  \lehead{\toplineno}
-}
-\def\dil@righthead{
-  \rohead{\toplineno}
-  \rehead{\toplineno}
-}
-\def\dil@insidefoot{
-  \ifoot{\bottomlineno}
-}
-\def\dil@outsidefoot{
-  \ofoot{\bottomlineno}
-}
-\def\dil@centerfoot{
-  \cfoot{\bottomlineno}
-}
-\def\dil@leftfoot{
-  \lofoot{\bottomlineno}
-  \lefoot{\bottomlineno}
-}
-\def\dil@rightfoot{
-  \rofoot{\bottomlineno}
-  \refoot{\bottomlineno}
-}
+\set@head{inside}{ihead}
+\set@head{outside}{ohead}
+\set@head{center}{chead}
+\set@head{left}{scrlefthead}
+\set@head{right}{scrrighthead}
+\set@foot{inside}{ifoot}
+\set@foot{outside}{ofoot}
+\set@foot{center}{cfoot}
+\set@foot{left}{scrleftfoot}
+\set@foot{right}{scrrightfoot}
+
+\set@namehead{inside}{ihead}
+\set@namehead{outside}{ohead}
+\set@namehead{center}{chead}
+\set@namehead{left}{scrlefthead}
+\set@namehead{right}{scrrighthead}
+\set@namefoot{inside}{ifoot}
+\set@namefoot{outside}{ofoot}
+\set@namefoot{center}{cfoot}
+\set@namefoot{left}{scrleftfoot}
+\set@namefoot{right}{scrrightfoot}
+
+\ifKV@dilfamily@hijackboth
+\cfoot{\thepage}
+\fi
 \fi
 
 %------------------------------
@@ -324,4 +346,5 @@
 
 \AtBeginDocument{%
   \setcounter{firstline}{\the\inputlineno}%
+  \xdef\thefilename{\currfilename}
 }
