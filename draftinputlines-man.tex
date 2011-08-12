@@ -1,10 +1,9 @@
-\documentclass{scrartcl}
+\documentclass[twoside]{scrartcl}
 \usepackage[
-headfootpackage=scrpage,
-inputlineshead=outside,
-inputlinesfoot=outside,
+headfootpackage=fancyhdr,
+hijackboth=true,
 dilinputfiles=true,
-inputfilesrule=true,
+inputfilesrule=false,
 inputfloatname=true,
 ]{draftinputlines}
 \usepackage{listings}
@@ -26,15 +25,22 @@ inputfloatname=true,
 % \xdef\thefilename{\currfilename}
 % \chead{\texttt{\thefilename}\xdef\thefilename{\currfilename}}
 % \cfoot{\texttt{\currfilename}}
+
+\newcommand\doadef[2]{%
+  \expandafter\def\csname #1\endcsname{\csname
+    #2\endcsname{Foo}}
+}
 \begin{document}
 \section{Introduction}
+
+
 This package adds the input lines of various parts of your LaTeX
 document as marginpars.
 It can also add the first and last input lines read to the header and
 footer respectively.
 
 The marginpars float, and I can't guarantee they'll be entirely
-accurate if lots are bunched together.\marginnote{Rightie}
+accurate if lots are bunched together.
 Also, the begin and end page numbers might not be totally accurate.
 But they're still useful (I hope).
 
@@ -69,10 +75,10 @@ The options are:
   \item[plain] Use the plain TeX macros.
 \end{description}
 
-\paragraph{\lstinline+inputlineshead,inputlinesfoot+}
+\paragraph{\lstinline+inputlineshead,inputlinesfoot,filenamehead,filenamefoot+}
 
-The print the line number at the start of the page at the top and the
-end of the page at the bottom.
+These options print the line number and file name at the start of the
+page at the top and the end of the page at the bottom. 
 The options available are the same for both, though they can be set separately. 
 They are:
 \begin{description}[labelindent=1cm]
@@ -92,13 +98,14 @@ the page builder works, but they are probably good enough for most purposes.
 \paragraph{\lstinline+dilfont+}
 
 This defines what font the input line numbers will appear in.
-The default is |\ttfamily|.
+The default is |\ttfamily\small|.
 
 \paragraph{\lstinline+environmentline+}
 
 This option takes a list of environment names.
 Those environments listed will then print the line number where they
 start.
+This is only necessary in |safemode| (see below).
 
 \paragraph{Switches}
 
@@ -107,28 +114,20 @@ control.
 \begin{description}
 \item[sectionline] Determines whether each section will print the line
   it is printed on.
-\item[captionline] Determines whether captions to figures, tables and
-  so on, will print their input line number.
-  I expect this will break with subcaptions.
-  These marginpars don't float.
-\item[inputfloatname] Prints the name of the file the float is from.
-  If |captionline| is false, this has no effect.
-\item[dilbasicenvlines] This basically passes a bunch of basic
-  environments to |environmentline|, namely:
-  |itemize,enumerate,description,quote,displaymath,equation,equation*,quotation,verse,abstract,flushleft,center,flushright,eqnarry,minipage|
-\item[dilamsmathenvlines] Like |dilbasicenvlines| this makes some
-  |amsmath| environments print their input line numbers.
-  For now it only actually does this for |align| and |align*|.
-  Most of the other environments are supposed to be use \emph{inside}
-  another mathmode environment, and so the outer mathmode
-  environment's start should give enough of an indication of where
-  this environment is.
 \item[dilinputfiles] Prints the name and input line number of files
   included with |\input| and |\include|.
 \item[dilinputfilesrule] Prints rules above the start and below the
   end of an included file, so it's obvious where in the page it starts
   and ends.
   If |dilinputfiles| is false, this doesn't do anything.
+\item[safemode] The way this package works is to hook into the
+  paragraph mechanism with the |everyhook| package.
+  This isn't always a good idea since paragraphs are used for all
+  sorts of random stuff.
+  So if the package breaks, try safe mode. 
+  Fewer line numbers, but it should be more robust.
+\item[hijackheaders,hijackfooters,hijackboth] These are just a quick
+  way to set the headers and footers to output input line information.
 \end{description}
 
 
