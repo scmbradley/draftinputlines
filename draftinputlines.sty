@@ -18,7 +18,7 @@
   % draftinputlines-man.tex and README;
   % and derived file draftinputlines-man.pdf
 
-\ProvidesPackage{draftinputlines}[2011/08/11 v0.45]
+\ProvidesPackage{draftinputlines}[2011/08/12 v0.46]
 
 
 %------------------------------
@@ -36,10 +36,20 @@
 
 \newcounter{firstline}
 
-\newcommand\dilmnotefloat[1]{\notmarginhookfalse\marginnote{\raggedright\small #1}\notmarginhooktrue}
-\let\dilmnote\dilmnotefloat
-% I had two commands, but I decided I don't need the lines to float,
-% and marginnote works inside floats...
+\newcommand\dilmnote[1]{\notmarginhookfalse\marginnote{\raggedright\dilfont #1}\notmarginhooktrue}
+\def\dilfont{\small\ttfamily}
+\define@cmdkey{dilfamily}{dilfont}{\def\dilfont{\cmdKV@dilfamily@dilfont}}
+\newcommand\addlineno{\dilmnote{\the\inputlineno}}
+
+\newif\ifnotmarginhook
+\notmarginhooktrue
+
+% Safe mode turns off paragraph hacking
+
+\define@boolkey{dilfamily}{safemode}[false]{}
+
+\define@boolkey{dilfamily}{hijackheaders}[true]{}
+
 %--------------------------------------------------
 % Headers and footers
 %--------------------------------------------------
@@ -94,33 +104,11 @@
   \AtEndPreamble{\csname dil@#1namefoot\endcsname}%
 }
 
-%--------------------------------------------------
-% Paragraph line numbers
-%--------------------------------------------------
-% I guess this is dangerous because the paragraph hook gets used all over the place
-
-\newif\ifnotmarginhook
-\notmarginhooktrue
-\PushPostHook{par}{%
-  \ifnotmarginhook%
-  \notmarginhookfalse%
-  {\marginnote{\small\dilfont\the\inputlineno}}%
-  \notmarginhooktrue%
-  \fi%
-}
 
 
-%--------------------------------------------------
-% Other input line numbers
-%--------------------------------------------------
-\def\dilfont{\ttfamily}
-\define@cmdkey{dilfamily}{dilfont}{\def\dilfont{\cmdKV@dilfamily@dilfont}}
 
 
-%%For posterity, here is the old way to have environments/sections and so on
-%%dealt with individually
-%% If I decide that the paragraph hack is too dangerous, I'll turn these back on.
-% \define@boolkeys{dilfamily}{sectionline,captionline}[true]{}
+
 
 % \newcommand\dil@patchenv[1]{%
 %   \AtBeginEnvironment{#1}{\addlineno}}
@@ -130,8 +118,8 @@
 % % Add environments to the list to have them print a line number.
 % %\dil@csvpatchenv{itemize,enumerate,description,quote}
 
-
-% \define@key{dilfamily}{environmentline}{\dil@csvpatchenv{#1}}
+\define@boolkeys{dilfamily}{sectionline}[true]{}
+\define@key{dilfamily}{environmentline}{\dil@csvpatchenv{#1}}
 
 \define@boolkeys{dilfamily}{
   dilinputfiles,inputfilesrule,inputfloatname
@@ -154,49 +142,113 @@
 %--------------------------------------------------
 
 \ProcessOptionsX<dilfamily>
+%------------------------------
+% Paragraph numbers
+%------------------------------
+\ifKV@dilfamily@safemode
+
+% Safe mode adds line numbers to section headings and selected environments.
+
+\newcommand\dil@patchenv[1]{%
+  \AtBeginEnvironment{#1}{\addlineno}}
+\newcommand\dil@csvpatchenv{%
+  \let\do\dil@patchenv
+  \docsvlist}
+
+% Add environments to the list to have them print a line number.
+\dil@csvpatchenv{itemize,enumerate,description,quote}
+
+\ifKV@dilfamily@sectionline
+\pretocmd{\@startsection}{\addlineno}
+\fi
+
+\else
+
+% I guess this is dangerous because the paragraph hook gets used all over the place
+% That's why safemode turns it off.
+
+\PushPostHook{par}{%
+  \ifnotmarginhook%
+  \notmarginhookfalse%
+  {\marginnote{\small\dilfont\the\inputlineno}}%
+  \notmarginhooktrue%
+  \fi%
+}
+
+\fi
 
 %------------------------------
 % Headers and footers
 %------------------------------
+\ifKV@dilfamily@hijackheaders
+\setkeys{dilfamily}{
+  inputlineshead=outside,
+  inputlinesfoot=outside,
+  }
+\fi
+
+\newcommand\toplineno{%
+  {\dilfont\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}%
+  }
+\newcommand\bottomlineno{%
+  {\dilfont\the\inputlineno}%
+}
+\newcommand\toplinefile{%
+  \dilfont\thefilename\xdef\thefilename{\currfilename}%
+}
+\newcommand\bottomlinefile{%
+  \dilfont\currfilename%
+}
+\newcommand\set@head[2]{%
+  \expandafter\def\csname #1\endcsname{%
+    \csname dil@#2\endcsname{\toplineno}}}
+\newcommand\set@foot[2]{
+  \expandafter\def\csname #1\endcsname{%
+    \csname dil@#2\endcsname{\bottomlineno}}}
+
 %------------------------------
 % Define commands for scrpage
 %------------------------------
+
+%This section is tremendously inelegant.
+
 \ifKV@dilfamily@scrpage
 \RequirePackage{scrpage2}
 \pagestyle{scrheadings}
 \def\dil@insidehead{
-  \ihead{{\dilfont\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  \ihead{\toplineno}
 }
+
 \def\dil@outsidehead{
-\ohead{{\dilfont\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  \ohead{\toplineno}
 }
 \def\dil@centerhead{
-  \chead{{\dilfont\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  \chead{\toplineno}
 }
 \def\dil@lefthead{
-  \lohead{{\dilfont\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
-  \lehead{{\dilfont\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  \lohead{\toplineno}
+  \lehead{\toplineno}
 }
 \def\dil@righthead{
-  \rohead{{\dilfont\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
-  \rehead{{\dilfont\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  \rohead{\toplineno}
+  \rehead{\toplineno}
 }
 \def\dil@insidefoot{
-  \ifoot{{\dilfont\the\inputlineno}}
+  \ifoot{\bottomlineno}
 }
 \def\dil@outsidefoot{
-  \ofoot{{\dilfont\the\inputlineno}}
+  \ofoot{\bottomlineno}
 }
 \def\dil@centerfoot{
-  \cfoot{{\dilfont\the\inputlineno}}
+  \cfoot{\bottomlineno}
 }
 \def\dil@leftfoot{
-  \lofoot{{\dilfont\the\inputlineno}}
-  \lefoot{{\dilfont\the\inputlineno}}
+  \lofoot{\bottomlineno}
+  \lefoot{\bottomlineno}
 }
 \def\dil@rightfoot{
-  \rofoot{{\dilfont\the\inputlineno}}
-  \refoot{{\dilfont\the\inputlineno}}
+  \rofoot{\bottomlineno}
+  \refoot{\bottomlineno}
 }
 \fi
 
@@ -208,35 +260,35 @@
 \pagestyle{fancy}
 \def\dil@insidehead{
   \fancyhead[RE,LO]{%
-    {\dilfont\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+    \toplineno}
 }
 \def\dil@outsidehead{
   \fancyhead[RO,LE]{%
-    {\dilfont\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+    \toplineno}
 }
 \def\dil@centerhead{
-  \chead{{\dilfont\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  \chead{\toplineno}
 }
 \def\dil@lefthead{
-  \lhead{{\dilfont\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  \lhead{\toplineno}
 }
 \def\dil@righthead{
-  \rhead{{\dilfont\arabic{firstline}}\setcounter{firstline}{\the\inputlineno}}
+  \rhead{\toplineno}
 }
 \def\dil@insidefoot{
-  \fancyfoot[RE,LO]{{\dilfont\the\inputlineno}}
+  \fancyfoot[RE,LO]{\bottomlineno}
 }
 \def\dil@outsidefoot{
-  \fancyfoot[RO,LE]{{\dilfont\the\inputlineno}}
+  \fancyfoot[RO,LE]{\bottomlineno}
 }
 \def\dil@centerfoot{
-  \cfoot{{\dilfont\the\inputlineno}}
+  \cfoot{\bottomlineno}
 }
 \def\dil@leftfoot{
-  \lfoot{{\dilfont\the\inputlineno}}
+  \lfoot{\bottomlineno}
 }
 \def\dil@rightfoot{
-  \rfoot{{\dilfont\the\inputlineno}}
+  \rfoot{\bottomlineno}
 }
 \fi
 
