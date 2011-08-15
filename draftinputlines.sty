@@ -123,7 +123,7 @@
 \define@key{dilfamily}{environmentline}{\dil@csvpatchenv{#1}}
 
 \define@boolkeys{dilfamily}{
-  dilinputfiles,inputfilesrule,inputfloatname
+  dilinputfiles,inputfilesrule,graphicsfilename
 }[true]{}
 %   
 % Optional lists of environments
@@ -325,6 +325,10 @@
 
 \fi
 
+\ifKV@dilfamily@memoir
+\makepagestyle{dil}
+\pagestyle{dil}
+\fi
 
 %------------------------------
 % Sections, environments
@@ -332,7 +336,18 @@
 
 % Oops. I deleted the environment stuff...
 
-
+%------------------------------
+% Inputs and inclusions
+%------------------------------
+\ifKV@dilfamily@graphicsfilename
+\pretocmd\Gin@setfile{
+      \@reversemargintrue%
+      \notmarginhookfalse
+      \marginnote{\dilfamily #3}%
+      \@reversemarginfalse%
+      \notmarginhooktrue%
+}{}{}
+\fi
 \ifKV@dilfamily@dilinputfiles
 \AtBeginOfInputs{%
   \ifKV@dilfamily@inputfilesrule%
