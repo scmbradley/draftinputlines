@@ -18,7 +18,7 @@
   % draftinputlines-man.tex and README;
   % and derived file draftinputlines-man.pdf
 
-\ProvidesPackage{draftinputlines}[2011/08/12 v0.46]
+\ProvidesPackage{draftinputlines}[2011/08/15 v0.5]
 
 
 %------------------------------
@@ -35,8 +35,39 @@
 %------------------------------
 
 \newcounter{firstline}
+\newlength\mnotevadjust
 
-\newcommand\dilmnote[1]{\notmarginhookfalse\marginnote{\raggedright\dilfont #1}\notmarginhooktrue}
+\newcommand\dilmnote[1]{%
+  \notmarginhookfalse%
+  \marginnote{\dilfont #1}%
+  \notmarginhooktrue%
+}
+\newcommand\dilrnote[1]{%
+  \@reversemargintrue
+  \dilmnote{#1}%
+  \@reversemarginfalse
+}
+
+\newcommand\dilrotnote[1]{%
+  \notmarginhookfalse
+  \@reversemargintrue
+  \marginnote{%
+    \rotatebox{90}{\dilfont #1}%
+  }
+  \@reversemarginfalse
+  \notmarginhooktrue
+}
+\newcommand\dilrotadjnote[1]{%
+  \settowidth\mnotevadjust{#1}
+  \notmarginhookfalse
+  \@reversemargintrue
+  \marginnote{%
+    \rotatebox{90}{\dilfont #1}%
+  }[-\mnotevadjust]
+  \@reversemarginfalse
+  \notmarginhooktrue
+}
+
 \def\dilfont{\small\ttfamily}
 \define@cmdkey{dilfamily}{dilfont}{\def\dilfont{\cmdKV@dilfamily@dilfont}}
 \newcommand\addlineno{\dilmnote{\the\inputlineno}}
@@ -104,20 +135,6 @@
   inside,outside,center,left,right,off}{%
   \AtEndPreamble{\csname dil@#1namefoot\endcsname}%
 }
-
-
-
-
-
-
-
-% \newcommand\dil@patchenv[1]{%
-%   \AtBeginEnvironment{#1}{\addlineno}}
-% \newcommand\dil@csvpatchenv{%
-%   \let\do\dil@patchenv
-%   \docsvlist}
-% % Add environments to the list to have them print a line number.
-% %\dil@csvpatchenv{itemize,enumerate,description,quote}
 
 \define@boolkeys{dilfamily}{sectionline}[true]{}
 \define@key{dilfamily}{environmentline}{\dil@csvpatchenv{#1}}
@@ -341,11 +358,7 @@
 %------------------------------
 \ifKV@dilfamily@graphicsfilename
 \pretocmd\Gin@setfile{
-      \@reversemargintrue%
-      \notmarginhookfalse
-      \marginnote{\dilfamily #3}%
-      \@reversemarginfalse%
-      \notmarginhooktrue%
+      \dilrotnote{#3}
 }{}{}
 \fi
 \ifKV@dilfamily@dilinputfiles
@@ -353,18 +366,14 @@
   \ifKV@dilfamily@inputfilesrule%
   \noindent\rule{\linewidth}{1pt}%
   \fi
-  \@reversemargintrue
-  \dilmnote{\dilfont\currfilename}
-  \@reversemarginfalse
+  \dilrotnote{\dilfont\currfilename}
 }
 
 \AtEndOfInputs{%
   \ifKV@dilfamily@inputfilesrule%
   \noindent\rule{\linewidth}{1pt}%
   \fi%
-  \@reversemargintrue%
-  \dilmnote{\dilfont End \currfilename}%
-  \@reversemarginfalse%
+  \dilrotadjnote{\dilfont End \currfilename}%
 }
 \AtBeginOfIncludes{\dilmnote{Include file: {\dilfont\currfilename} at line {\dilfont\the\inputlineno}}}
 \AtEndOfIncludes{\dilmnote{End of {\dilfont\currfilename}}}
