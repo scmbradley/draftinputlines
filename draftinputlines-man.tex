@@ -4,7 +4,6 @@ headfootpackage=fancyhdr,
 hijackboth=true,
 dilinputfiles=true,
 inputfilesrule=false,
-inputfloatname=true,
 ]{draftinputlines}
 \usepackage{listings}
 \lstloadlanguages{[LaTeX]TeX} 
@@ -120,6 +119,9 @@ control.
   end of an included file, so it's obvious where in the page it starts
   and ends.
   If |dilinputfiles| is false, this doesn't do anything.
+\item[graphicsfilename] Prints the name of files added with
+  |\includegraphics| in the opposite margin to the page numbers.
+  Load |graphicx| \emph{before} |draftinputlines| for this to work.
 \item[safemode] The way this package works is to hook into the
   paragraph mechanism with the |everyhook| package.
   This isn't always a good idea since paragraphs are used for all
