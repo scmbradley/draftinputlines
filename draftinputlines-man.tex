@@ -21,15 +21,9 @@ inputfilesrule=false,
 \lstMakeShortInline{|}
 \usepackage{enumitem}
 \setdescription{font=\ttfamily,leftmargin=4em}
-% \xdef\thefilename{\currfilename}
-% \chead{\texttt{\thefilename}\xdef\thefilename{\currfilename}}
-% \cfoot{\texttt{\currfilename}}
 
-\newcommand\doadef[2]{%
-  \expandafter\def\csname #1\endcsname{\csname
-    #2\endcsname{Foo}}
-}
 \begin{document}
+\def\dilfont{\sffamily}
 
 \section{Introduction}
 
@@ -97,9 +91,11 @@ the page builder works, but they are probably good enough for most purposes.
 
 \paragraph{\lstinline+dilfont+}
 
-This defines what font the input line numbers will appear in.
+All the input line numbers and file names are formatted with |\dilfont|.
 The default is |\ttfamily\small|.
-This doesn't currently work.
+It can be redefined as normal:
+|\def\dilfont{\small\sffamily}| for example would make the numbers
+appear sans serif.
 
 \paragraph{\lstinline+environmentline+}
 
