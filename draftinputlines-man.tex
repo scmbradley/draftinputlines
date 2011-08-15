@@ -30,6 +30,7 @@ inputfilesrule=false,
     #2\endcsname{Foo}}
 }
 \begin{document}
+
 \section{Introduction}
 
 
@@ -98,6 +99,7 @@ the page builder works, but they are probably good enough for most purposes.
 
 This defines what font the input line numbers will appear in.
 The default is |\ttfamily\small|.
+This doesn't currently work.
 
 \paragraph{\lstinline+environmentline+}
 
@@ -111,8 +113,6 @@ This is only necessary in |safemode| (see below).
 The following is a list of Boolean (true/false) options and what they
 control.
 \begin{description}
-\item[sectionline] Determines whether each section will print the line
-  it is printed on.
 \item[dilinputfiles] Prints the name and input line number of files
   included with |\input| and |\include|.
 \item[dilinputfilesrule] Prints rules above the start and below the
@@ -122,14 +122,16 @@ control.
 \item[graphicsfilename] Prints the name of files added with
   |\includegraphics| in the opposite margin to the page numbers.
   Load |graphicx| \emph{before} |draftinputlines| for this to work.
+\item[hijackheaders,hijackfooters,hijackboth] These are just a quick
+  way to set the headers and footers to output input line information.
 \item[safemode] The way this package works is to hook into the
   paragraph mechanism with the |everyhook| package.
   This isn't always a good idea since paragraphs are used for all
   sorts of random stuff.
   So if the package breaks, try safe mode. 
   Fewer line numbers, but it should be more robust.
-\item[hijackheaders,hijackfooters,hijackboth] These are just a quick
-  way to set the headers and footers to output input line information.
+\item[sectionline] Determines whether each section will print the line
+  it is printed on.
 \end{description}
 
 
