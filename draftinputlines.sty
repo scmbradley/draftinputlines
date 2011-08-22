@@ -233,23 +233,28 @@
 
 \newcommand\set@head[2]{%
   \expandafter\def\csname dil@#1head\endcsname{%
-    \csname #2\endcsname{\toplineno}}}
+    \csname #2\endcsname{\toplineno}}
+  \expandafter\def\csname dil@#1namehead\endcsname{%
+    \csname #2\endcsname{\toplinefile}}
+}
 \newcommand\set@foot[2]{
   \expandafter\def\csname dil@#1foot\endcsname{%
-    \csname #2\endcsname{\bottomlineno}}}
-
-\newcommand\set@namehead[2]{%
-  \expandafter\def\csname dil@#1namehead\endcsname{%
-    \csname #2\endcsname{\toplinefile}}}
-\newcommand\set@namefoot[2]{%
+    \csname #2\endcsname{\bottomlineno}}
   \expandafter\def\csname dil@#1namefoot\endcsname{%
-    \csname #2\endcsname{\bottomlinefile}}}
+    \csname #2\endcsname{\bottomlinefile}}
+}
 
 %------------------------------
 % Define commands for scrpage
 %------------------------------
 
 %This section is tremendously inelegant.
+
+
+
+\ifKV@dilfamily@scrpage
+\RequirePackage{scrpage2}
+\pagestyle{scrheadings}
 
 \newcommand\scrlefthead[1]{%
   \lohead{#1}\lehead{#1}%
@@ -264,11 +269,6 @@
   \rofoot{#1}\refoot{#1}%
 }
 
-
-\ifKV@dilfamily@scrpage
-\RequirePackage{scrpage2}
-\pagestyle{scrheadings}
-
 \set@head{inside}{ihead}
 \set@head{outside}{ohead}
 \set@head{center}{chead}
@@ -280,17 +280,6 @@
 \set@foot{left}{scrleftfoot}
 \set@foot{right}{scrrightfoot}
 
-\set@namehead{inside}{ihead}
-\set@namehead{outside}{ohead}
-\set@namehead{center}{chead}
-\set@namehead{left}{scrlefthead}
-\set@namehead{right}{scrrighthead}
-\set@namefoot{inside}{ifoot}
-\set@namefoot{outside}{ofoot}
-\set@namefoot{center}{cfoot}
-\set@namefoot{left}{scrleftfoot}
-\set@namefoot{right}{scrrightfoot}
-
 \ifKV@dilfamily@hijackboth
 \cfoot{\thepage}
 \fi
@@ -299,6 +288,8 @@
 %------------------------------
 % Define commands for fancyhdr 
 %------------------------------
+
+
 \ifKV@dilfamily@fancyhdr
 \RequirePackage{fancyhdr}
 \pagestyle{fancy}
@@ -327,16 +318,6 @@
 \set@foot{left}{lfoot}
 \set@foot{right}{rfoot}
 
-\set@namehead{inside}{fcinsidehead}
-\set@namehead{outside}{fcoutsidehead}
-\set@namehead{center}{chead}
-\set@namehead{left}{lhead}
-\set@namehead{right}{rhead}
-\set@namefoot{inside}{fcinsidefoot}
-\set@namefoot{outside}{fcoutsidefoot}
-\set@namefoot{center}{cfoot}
-\set@namefoot{left}{lfoot}
-\set@namefoot{right}{rfoot}
 
 \ifKV@dilfamily@hijackboth
 \cfoot{\thepage}
