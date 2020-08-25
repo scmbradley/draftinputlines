@@ -1,6 +1,6 @@
-\documentclass[twoside]{scrartcl}
+\documentclass{scrartcl}
 \usepackage[
-headfootpackage=fancyhdr,
+headfootpackage=scrpage,
 hijackboth=true,
 dilinputfiles=true,
 inputfilesrule=false,
@@ -23,7 +23,7 @@ inputfilesrule=false,
 \setdescription{font=\ttfamily,leftmargin=4em}
 
 \begin{document}
-\def\dilfont{\sffamily}
+%\def\dilfont{\sffamily}
 
 \section{Introduction}
 
@@ -51,22 +51,19 @@ what they do.
 
 \paragraph{\lstinline+headfootpackage+}
 This sets what package is used to do the headers and footers.
+
 Set it to whatever is setting the headers and footers in your
 document.
 The options are:
 \begin{description}[labelindent=1cm]
 \item[scrpage] Uses KOMA script's |scrpage2|
 \item[fancyhdr] Uses |fancyhdr|
-\item[memoir] Uses |memoir|. Awkwardly, given the way |memoir|'s
-  header and footer mechanisms work, this will overwrite any current
-  headers you have set.
-  So this just sets a page number somewhere where it isn't setting an
-  input line number.
-  If you want to add the input line number to your existing headers
-  instead, you can do that with these two macros: 
-  \textsc{These macros don't exist yet. 
-    When I make memoir work, I will fix this.}
-  \item[plain] Use the plain TeX macros.
+  % These options don't currently work.
+  % Genuinely not sure I can be bothered writing them.
+% \item[memoir] Uses |memoir|. 
+%   Coming soon.
+% \item[plain] Use the plain TeX macros. 
+%   Coming soon.
 \end{description}
 
 \paragraph{\lstinline+inputlineshead,inputlinesfoot,filenamehead,filenamefoot+}
